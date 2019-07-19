@@ -36,7 +36,7 @@
   <div class="login-box-body">
     <p class="login-box-msg">{{ trans('admin.login') }}</p>
 
-    <form action="{{ admin_base_path('auth/login') }}" method="post">
+    <form action="{{ url(admin_base_path('auth/login')) }}" method="post">
       <div class="form-group has-feedback {!! !$errors->has('username') ?: 'has-error' !!}">
 
         @if($errors->has('username'))

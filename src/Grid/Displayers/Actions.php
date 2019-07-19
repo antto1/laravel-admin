@@ -166,8 +166,9 @@ class Actions extends AbstractDisplayer
      */
     protected function renderView()
     {
+        $url = url($this->getResource().'/'.$this->getRouteKey());
         return <<<EOT
-<a href="{$this->getResource()}/{$this->getRouteKey()}" class="{$this->grid->getGridRowName()}-view">
+<a href="{$url}}" class="{$this->grid->getGridRowName()}-view">
     <i class="fa fa-eye"></i>
 </a>
 EOT;
@@ -180,8 +181,10 @@ EOT;
      */
     protected function renderEdit()
     {
+        $url = url($this->getResource().'/'.$this->getRouteKey());
+
         return <<<EOT
-<a href="{$this->getResource()}/{$this->getRouteKey()}/edit" class="{$this->grid->getGridRowName()}-edit">
+<a href="{$url}/edit" class="{$this->grid->getGridRowName()}-edit">
     <i class="fa fa-edit"></i>
 </a>
 EOT;
@@ -211,6 +214,8 @@ EOT;
             'cancel'         => trans('admin.cancel'),
         ];
 
+        $url = url($this->getResource());
+
         $script = <<<SCRIPT
 
 $('.{$this->grid->getGridRowName()}-delete').unbind('click').click(function() {
@@ -229,7 +234,7 @@ $('.{$this->grid->getGridRowName()}-delete').unbind('click').click(function() {
             return new Promise(function(resolve) {
                 $.ajax({
                     method: 'post',
-                    url: '{$this->getResource()}/' + id,
+                    url: '{$url}/' + id,
                     data: {
                         _method:'delete',
                         _token:LA.token,

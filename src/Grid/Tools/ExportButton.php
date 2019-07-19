@@ -31,13 +31,13 @@ class ExportButton extends AbstractTool
 
 $('.{$this->grid->getExportSelectedName()}').click(function (e) {
     e.preventDefault();
-    
+
     var rows = $.admin.grid.selected().join();
 
     if (!rows) {
         return false;
     }
-    
+
     var href = $(this).attr('href').replace('__rows__', rows);
     location.href = href;
 });
@@ -69,6 +69,10 @@ SCRIPT;
 
         $page = request('page', 1);
 
+        $all_url = url($this->grid->getExportUrl('all'));
+        $page_url = url($this->grid->getExportUrl('page', $page));
+        $selected_url = url($this->grid->getExportUrl('selected', '__rows__'));
+
         return <<<EOT
 
 <div class="btn-group pull-right" style="margin-right: 10px">
@@ -78,9 +82,9 @@ SCRIPT;
         <span class="sr-only">Toggle Dropdown</span>
     </button>
     <ul class="dropdown-menu" role="menu">
-        <li><a href="{$this->grid->getExportUrl('all')}" target="_blank">{$trans['all']}</a></li>
-        <li><a href="{$this->grid->getExportUrl('page', $page)}" target="_blank">{$trans['current_page']}</a></li>
-        <li><a href="{$this->grid->getExportUrl('selected', '__rows__')}" target="_blank" class='{$this->grid->getExportSelectedName()}'>{$trans['selected_rows']}</a></li>
+        <li><a href="{$all_url}" target="_blank">{$trans['all']}</a></li>
+        <li><a href="{$page_url}" target="_blank">{$trans['current_page']}</a></li>
+        <li><a href="{$selected_url}" target="_blank" class='{$this->grid->getExportSelectedName()}'>{$trans['selected_rows']}</a></li>
     </ul>
 </div>
 EOT;

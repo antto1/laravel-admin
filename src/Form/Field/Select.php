@@ -115,6 +115,8 @@ class Select extends Field
             $class = $field;
         }
 
+        $sourceUrl= url($sourceUrl);
+
         $placeholder = json_encode([
             'id'   => '',
             'text' => trans('admin.choose'),
@@ -156,6 +158,10 @@ EOT;
      */
     public function loads($fields = [], $sourceUrls = [], $idField = 'id', $textField = 'text', bool $allowClear = true)
     {
+        foreach($sourceUrls as $item){
+            $item= url($item);
+        }
+
         $fieldsStr = implode('.', $fields);
         $urlsStr = implode('^', $sourceUrls);
 
@@ -173,7 +179,7 @@ var refreshOptions = function(url, target) {
         target.find("option").remove();
         $(target).select2({
             placeholder: $placeholder,
-            allowClear: $allowClear,        
+            allowClear: $allowClear,
             data: $.map(data, function (d) {
                 d.id = d.$idField;
                 d.text = d.$textField;
@@ -252,6 +258,8 @@ EOT;
      */
     protected function loadRemoteOptions($url, $parameters = [], $options = [])
     {
+        $url= url($url);
+
         $ajaxOptions = [
             'url' => $url.'?'.http_build_query($parameters),
         ];
@@ -278,9 +286,9 @@ $.ajax($ajaxOptions).done(function(data) {
     data: data,
     $configs
   });
-  
+
   var value = select.data('value') + '';
-  
+
   if (value) {
     value = value.split(',');
     select.select2('val', value);
@@ -303,6 +311,8 @@ EOT;
      */
     public function ajax($url, $idField = 'id', $textField = 'text')
     {
+        $url= url($url);
+
         $configs = array_merge([
             'allowClear'         => true,
             'placeholder'        => $this->label,

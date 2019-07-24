@@ -24,7 +24,7 @@ use Illuminate\Support\Str;
  * @method $this button($style = null)
  * @method $this link($href = '', $target = '_blank')
  * @method $this badge($style = 'red')
- * @method $this progressBar($style = 'primary', $size = 'sm', $max = 100)
+ * @method $this progress($style = 'primary', $size = 'sm', $max = 100)
  * @method $this radio($options = [])
  * @method $this checkbox($options = [])
  * @method $this orderable($column, $label = '')
@@ -35,6 +35,8 @@ use Illuminate\Support\Str;
  * @method $this downloadable($server = '')
  * @method $this copyable()
  * @method $this qrcode($formatter = null, $width = 150, $height = 150)
+ * @method $this prefix($prefix)
+ * @method $this suffix($suffix)
  */
 class Column
 {
@@ -108,7 +110,31 @@ class Column
      *
      * @var array
      */
-    public static $displayers = [];
+    public static $displayers = [
+        'editable'    => Displayers\Editable::class,
+        'switch'      => Displayers\SwitchDisplay::class,
+        'switchGroup' => Displayers\SwitchGroup::class,
+        'select'      => Displayers\Select::class,
+        'image'       => Displayers\Image::class,
+        'label'       => Displayers\Label::class,
+        'button'      => Displayers\Button::class,
+        'link'        => Displayers\Link::class,
+        'badge'       => Displayers\Badge::class,
+        'progressBar' => Displayers\ProgressBar::class,
+        'progress'    => Displayers\ProgressBar::class,
+        'radio'       => Displayers\Radio::class,
+        'checkbox'    => Displayers\Checkbox::class,
+        'orderable'   => Displayers\Orderable::class,
+        'table'       => Displayers\Table::class,
+        'expand'      => Displayers\Expand::class,
+        'modal'       => Displayers\Modal::class,
+        'carousel'    => Displayers\Carousel::class,
+        'downloadable'=> Displayers\Downloadable::class,
+        'copyable'    => Displayers\Copyable::class,
+        'qrcode'      => Displayers\QRCode::class,
+        'prefix'      => Displayers\Prefix::class,
+        'suffix'      => Displayers\Suffix::class,
+    ];
 
     /**
      * Defined columns.
@@ -329,8 +355,6 @@ class Column
     }
 
     /**
-     * @param string $name
-     *
      * @return string
      */
     public function getClassName()
@@ -650,6 +674,20 @@ class Column
 
         return $this->display(function ($value) {
             return Carbon::parse($value)->diffForHumans();
+        });
+    }
+
+    /**
+     * Returns a string formatted according to the given format string.
+     *
+     * @param string $format
+     *
+     * @return $this
+     */
+    public function date($format)
+    {
+        return $this->display(function ($value) use ($format) {
+            return date($format, strtotime($value));
         });
     }
 

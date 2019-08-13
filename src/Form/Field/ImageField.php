@@ -171,7 +171,7 @@ trait ImageField
             // Resize image with aspect ratio
             $image->$action($size[0], $size[1], function (Constraint $constraint) {
                 $constraint->aspectRatio();
-            })->resizeCanvas($size[0], $size[1], 'center', false, '#ffffff');
+            })->fit($size[0], $size[1]);
 
             if (!is_null($this->storagePermission)) {
                 $this->storage->put("{$this->getDirectory()}/{$path}", $image->encode(), $this->storagePermission);

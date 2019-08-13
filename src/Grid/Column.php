@@ -7,7 +7,7 @@ use Closure;
 use Encore\Admin\Grid;
 use Encore\Admin\Grid\Displayers\AbstractDisplayer;
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model as BaseModel;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -222,7 +222,7 @@ class Column
      */
     public function setModel($model)
     {
-        if (is_null(static::$model) && ($model instanceof Model)) {
+        if (is_null(static::$model) && ($model instanceof BaseModel)) {
             static::$model = $model->newInstance();
         }
     }
@@ -688,6 +688,22 @@ class Column
     {
         return $this->display(function ($value) use ($format) {
             return date($format, strtotime($value));
+        });
+    }
+
+    /**
+     * Display column as boolean , `✓` for true, and `✗` for false.
+     *
+     * @param array $map
+     *
+     * @return $this
+     */
+    public function bool(array $map = [])
+    {
+        return $this->display(function ($value) use ($map) {
+            $bool = empty($map) ? boolval($value) : $map[$value];
+
+            return $bool ? '<i class="fa fa-check text-green"></i>' : '<i class="fa fa-close text-red"></i>';
         });
     }
 

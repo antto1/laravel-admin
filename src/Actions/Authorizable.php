@@ -5,6 +5,9 @@ namespace Encore\Admin\Actions;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @mixin Action
+ */
 trait Authorizable
 {
     /**
@@ -26,6 +29,6 @@ trait Authorizable
      */
     public function failedAuthorization()
     {
-        return $this->error(__('admin.deny'))->send();
+        return $this->response()->error(__('admin.deny'))->send();
     }
 }

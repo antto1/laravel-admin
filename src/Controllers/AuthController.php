@@ -97,6 +97,8 @@ class AuthController extends Controller
         $form->tools(
             function (Form\Tools $tools) {
                 $tools->disableList();
+                $tools->disableDelete();
+                $tools->disableView();
             }
         );
 

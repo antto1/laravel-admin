@@ -1,12 +1,9 @@
 <?php
-
 namespace Encore\Admin\Form\Field;
-
 use Intervention\Image\Constraint;
 use Intervention\Image\Facades\Image as InterventionImage;
 use Intervention\Image\ImageManagerStatic;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-
 trait ImageField
 {
     /**
@@ -15,14 +12,12 @@ trait ImageField
      * @var array
      */
     protected $interventionCalls = [];
-
     /**
      * Thumbnail settings.
      *
      * @var array
      */
     protected $thumbnails = [];
-
     /**
      * Default directory for file to upload.
      *
@@ -32,7 +27,6 @@ trait ImageField
     {
         return config('admin.upload.directory.image');
     }
-
     /**
      * Execute Intervention calls.
      *
@@ -44,7 +38,6 @@ trait ImageField
     {
         if (!empty($this->interventionCalls)) {
             $image = ImageManagerStatic::make($target);
-
             foreach ($this->interventionCalls as $call) {
                 call_user_func_array(
                     [$image, $call['method']],
@@ -52,10 +45,8 @@ trait ImageField
                 )->save($target);
             }
         }
-
         return $target;
     }
-
     /**
      * Call intervention methods.
      *
@@ -71,19 +62,15 @@ trait ImageField
         if (static::hasMacro($method)) {
             return $this;
         }
-
         if (!class_exists(ImageManagerStatic::class)) {
             throw new \Exception('To use image handling and manipulation, please install [intervention/image] first.');
         }
-
         $this->interventionCalls[] = [
             'method'    => $method,
             'arguments' => $arguments,
         ];
-
         return $this;
     }
-
     /**
      * Render a image form field.
      *
@@ -92,10 +79,8 @@ trait ImageField
     public function render()
     {
         $this->options(['allowedFileTypes' => ['image'], 'msgPlaceholder' => trans('admin.choose_image')]);
-
         return parent::render();
     }
-
     /**
      * @param string|array $name
      * @param int          $width
@@ -114,10 +99,8 @@ trait ImageField
         } elseif (func_num_args() == 3) {
             $this->thumbnails[$name] = [$width, $height];
         }
-
         return $this;
     }
-
     /**
      * Destroy original thumbnail files.
      *
@@ -128,23 +111,18 @@ trait ImageField
         if ($this->retainable) {
             return;
         }
-
         foreach ($this->thumbnails as $name => $_) {
             // We need to get extension type ( .jpeg , .png ...)
             $ext = pathinfo($this->original, PATHINFO_EXTENSION);
-
             // We remove extension from file name so we can append thumbnail type
             $path = str_replace_last('.'.$ext, '', $this->original);
-
             // We merge original name + thumbnail name + extension
             $path = $path.'-'.$name.'.'.$ext;
-
             if ($this->storage->exists($path)) {
                 $this->storage->delete($path);
             }
         }
     }
-
     /**
      * Upload file and delete original thumbnail files.
      *
@@ -157,31 +135,24 @@ trait ImageField
         foreach ($this->thumbnails as $name => $size) {
             // We need to get extension type ( .jpeg , .png ...)
             $ext = pathinfo($this->name, PATHINFO_EXTENSION);
-
             // We remove extension from file name so we can append thumbnail type
             $path = str_replace_last('.'.$ext, '', $this->name);
-
             // We merge original name + thumbnail name + extension
             $path = $path.'-'.$name.'.'.$ext;
-
             /** @var \Intervention\Image\Image $image */
             $image = InterventionImage::make($file);
-
             $action = $size[2] ?? 'resize';
             // Resize image with aspect ratio
             $image->$action($size[0], $size[1], function (Constraint $constraint) {
                 $constraint->aspectRatio();
-            })->fit($size[0], $size[1]);
-
+            })->resizeCanvas($size[0], $size[1], 'center', false, '#ffffff');
             if (!is_null($this->storagePermission)) {
                 $this->storage->put("{$this->getDirectory()}/{$path}", $image->encode(), $this->storagePermission);
             } else {
                 $this->storage->put("{$this->getDirectory()}/{$path}", $image->encode());
             }
         }
-
         $this->destroyThumbnail();
-
         return $this;
     }
 }

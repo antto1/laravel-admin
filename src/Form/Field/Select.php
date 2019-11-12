@@ -128,9 +128,10 @@ class Select extends Field
 $(document).off('change', "{$this->getElementClassSelector()}");
 $(document).on('change', "{$this->getElementClassSelector()}", function () {
     var target = $(this).closest('.fields-group').find(".$class");
+    var targetValue = $(target).attr('data-value');
     $.get("$sourceUrl",{q : this.value}, function (data) {
         target.find("option").remove();
-        $(target).select2({
+        var select2 = $(target).select2({
             placeholder: $placeholder,
             allowClear: $strAllowClear,
             data: $.map(data, function (d) {
@@ -138,8 +139,20 @@ $(document).on('change', "{$this->getElementClassSelector()}", function () {
                 d.text = d.$textField;
                 return d;
             })
-        }).trigger('change');
+        })
+        var isInDataList = data.filter(function(d) {
+            return d.id == targetValue;
+        }).length > 0;
+        if(targetValue && isInDataList ) {
+            select2.val(targetValue);
+        }
+        select2.trigger('change');
     });
+});
+$("{$this->getElementClassSelector()}").each(function(){
+    if ($(this).data('value')) {
+        $(this).trigger('change');
+    }
 });
 EOT;
 

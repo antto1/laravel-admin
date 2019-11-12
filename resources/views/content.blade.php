@@ -21,12 +21,19 @@
                     </li>
                 @else
                 <li>
-                    <a href="{{ admin_url(\Illuminate\Support\Arr::get($item, 'url')) }}">
+                    @if (\Illuminate\Support\Arr::has($item, 'url'))
+                        <a href="{{ admin_url(\Illuminate\Support\Arr::get($item, 'url')) }}">
+                            @if (\Illuminate\Support\Arr::has($item, 'icon'))
+                                <i class="fa fa-{{ $item['icon'] }}"></i>
+                            @endif
+                            {{ $item['text'] }}
+                        </a>
+                    @else
                         @if (\Illuminate\Support\Arr::has($item, 'icon'))
                             <i class="fa fa-{{ $item['icon'] }}"></i>
                         @endif
                         {{ $item['text'] }}
-                    </a>
+                    @endif
                 </li>
                 @endif
             @endforeach
@@ -52,7 +59,11 @@
         @include('admin::partials.exception')
         @include('admin::partials.toastr')
 
-        {!! $content !!}
+        @if($_view_)
+            @include($_view_['view'], $_view_['data']);
+        @else
+            {!! $_content_ !!}
+        @endif
 
     </section>
 @endsection

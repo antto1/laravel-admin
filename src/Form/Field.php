@@ -528,6 +528,8 @@ class Field implements Renderable
             return;
         }
 
+        $this->setLabelClass(['asterisk']);
+
         // Only text field has `required` attribute.
         if (!$this instanceof Form\Field\Text) {
             return;
@@ -1086,9 +1088,9 @@ class Field implements Renderable
     /**
      * Get placeholder.
      *
-     * @return string
+     * @return mixed
      */
-    public function getPlaceholder(): string
+    public function getPlaceholder()
     {
         return $this->placeholder ?: trans('admin.input').' '.$this->label;
     }

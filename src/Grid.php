@@ -12,6 +12,7 @@ use Encore\Admin\Grid\Exporters\AbstractExporter;
 use Encore\Admin\Grid\Model;
 use Encore\Admin\Grid\Row;
 use Encore\Admin\Grid\Tools;
+use Encore\Admin\Traits\ShouldSnakeAttributes;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations;
 use Illuminate\Support\Collection;
@@ -33,6 +34,7 @@ class Grid
         Concerns\HasSelector,
         Concerns\CanHidesColumns,
         Concerns\CanFixColumns,
+        ShouldSnakeAttributes,
         Macroable {
             __call as macroCall;
         }
@@ -385,7 +387,7 @@ class Grid
             return $this;
         }
 
-        $name = Str::snake($relation).'.'.$column;
+        $name = ($this->shouldSnakeAttributes() ? Str::snake($relation) : $relation).'.'.$column;
 
         $this->model()->with($relation);
 
@@ -679,7 +681,8 @@ class Grid
             $queryString = http_build_query($constraints);
         }
 
-        return sprintf('%s/create%s',
+        return sprintf(
+            '%s/create%s',
             $this->resource(),
             $queryString ? ('?'.$queryString) : ''
         );
@@ -842,7 +845,9 @@ class Grid
         ) {
             $this->model()->with($method);
 
-            return $this->addColumn($method, $label)->setRelation(Str::snake($method));
+            return $this->addColumn($method, $label)->setRelation(
+                $this->shouldSnakeAttributes() ? Str::snake($method) : $method
+            );
         }
 
         if ($relation instanceof Relations\HasMany
@@ -852,7 +857,7 @@ class Grid
         ) {
             $this->model()->with($method);
 
-            return $this->addColumn(Str::snake($method), $label);
+            return $this->addColumn($this->shouldSnakeAttributes() ? Str::snake($method) : $method, $label);
         }
 
         return false;

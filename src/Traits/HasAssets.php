@@ -313,4 +313,58 @@ trait HasAssets
     {
         return admin_asset(static::$jQuery);
     }
+
+    /**
+     * @param $component
+     */
+    public static function component($component, $data = [])
+    {
+        $str = view($component, $data)->render();
+
+        $dom = new \DOMDocument();
+
+        libxml_use_internal_errors(true);
+
+        $dom->loadHTML('<?xml encoding="utf-8" ?>' . $str);
+
+        libxml_use_internal_errors(false);
+
+        if ($style = $dom->getElementsByTagName('style')[0]) {
+            static::style($style->nodeValue);
+        }
+
+        if ($script = $dom->getElementsByTagName('script')[0]) {
+            static::script(';(function () {' . $script->nodeValue . '})();');
+        }
+
+        if ($element = $dom->getElementsByTagName('template')[0]) {
+
+            $html = '';
+
+            foreach ($element->childNodes as $child) {
+                $html .= $element->ownerDocument->saveHTML($child);
+            }
+
+            if ($html) {
+                static::html($html);
+            }
+        }
+
+        if ($element = $dom->getElementsByTagName('body')[0]) {
+
+            $render = '';
+
+            foreach ($element->childNodes as $child) {
+                if ($child instanceof \DOMElement && in_array($child->tagName, ['template', 'style', 'script'])) {
+                    continue;
+                }
+
+                $render .= $element->ownerDocument->saveHTML($child);
+            }
+
+            if ($render) {
+                return $render;
+            }
+        }
+    }
 }

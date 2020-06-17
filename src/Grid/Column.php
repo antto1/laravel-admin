@@ -31,7 +31,7 @@ use Illuminate\Support\Str;
  * @method $this orderable($column, $label = '')
  * @method $this table($titles = [])
  * @method $this expand($callback = null)
- * @method $this modal($callback = null)
+ * @method $this modal($title, $callback = null)
  * @method $this carousel(int $width = 300, int $height = 200, $server = '')
  * @method $this downloadable($server = '')
  * @method $this copyable()
@@ -39,6 +39,7 @@ use Illuminate\Support\Str;
  * @method $this prefix($prefix, $delimiter = '&nbsp;')
  * @method $this suffix($suffix, $delimiter = '&nbsp;')
  * @method $this secret($dotCount = 6)
+ * @method $this limit($limit = 100, $end = '...')
  */
 class Column
 {
@@ -113,30 +114,33 @@ class Column
      * @var array
      */
     public static $displayers = [
-        'editable'    => Displayers\Editable::class,
-        'switch'      => Displayers\SwitchDisplay::class,
-        'switchGroup' => Displayers\SwitchGroup::class,
-        'select'      => Displayers\Select::class,
-        'image'       => Displayers\Image::class,
-        'label'       => Displayers\Label::class,
-        'button'      => Displayers\Button::class,
-        'link'        => Displayers\Link::class,
-        'badge'       => Displayers\Badge::class,
-        'progressBar' => Displayers\ProgressBar::class,
-        'progress'    => Displayers\ProgressBar::class,
-        'radio'       => Displayers\Radio::class,
-        'checkbox'    => Displayers\Checkbox::class,
-        'orderable'   => Displayers\Orderable::class,
-        'table'       => Displayers\Table::class,
-        'expand'      => Displayers\Expand::class,
-        'modal'       => Displayers\Modal::class,
-        'carousel'    => Displayers\Carousel::class,
-        'downloadable'=> Displayers\Downloadable::class,
-        'copyable'    => Displayers\Copyable::class,
-        'qrcode'      => Displayers\QRCode::class,
-        'prefix'      => Displayers\Prefix::class,
-        'suffix'      => Displayers\Suffix::class,
-        'secret'      => Displayers\Secret::class,
+        'editable'      => Displayers\Editable::class,
+        'switch'        => Displayers\SwitchDisplay::class,
+        'switchGroup'   => Displayers\SwitchGroup::class,
+        'select'        => Displayers\Select::class,
+        'image'         => Displayers\Image::class,
+        'label'         => Displayers\Label::class,
+        'button'        => Displayers\Button::class,
+        'link'          => Displayers\Link::class,
+        'badge'         => Displayers\Badge::class,
+        'progressBar'   => Displayers\ProgressBar::class,
+        'progress'      => Displayers\ProgressBar::class,
+        'radio'         => Displayers\Radio::class,
+        'checkbox'      => Displayers\Checkbox::class,
+        'orderable'     => Displayers\Orderable::class,
+        'table'         => Displayers\Table::class,
+        'expand'        => Displayers\Expand::class,
+        'modal'         => Displayers\Modal::class,
+        'carousel'      => Displayers\Carousel::class,
+        'downloadable'  => Displayers\Downloadable::class,
+        'copyable'      => Displayers\Copyable::class,
+        'qrcode'        => Displayers\QRCode::class,
+        'prefix'        => Displayers\Prefix::class,
+        'suffix'        => Displayers\Suffix::class,
+        'secret'        => Displayers\Secret::class,
+        'limit'         => Displayers\Limit::class,
+        'belongsTo'     => Displayers\BelongsTo::class,
+        'belongsToMany' => Displayers\BelongsToMany::class,
     ];
 
     /**
@@ -506,11 +510,9 @@ class Column
      */
     public function bindSearchQuery(Model $model)
     {
-        if (!$this->searchable || !request()->has($this->getName())) {
-            return;
+        if ($this->searchable && ($value = request($this->getName())) != '') {
+            $model->where($this->getName(), $value);
         }
-
-        $model->where($this->getName(), request($this->getName()));
     }
 
     /**
@@ -584,6 +586,29 @@ class Column
 
             return $value;
         });
+    }
+
+    /**
+     * @param string|Closure $input
+     * @param string $seperator
+     *
+     * @return $this
+     */
+    public function repeat($input, $seperator = '')
+    {
+        if (is_string($input)) {
+            $input = function () use ($input) {
+                return $input;
+            };
+        }
+
+        if ($input instanceof Closure) {
+            return $this->display(function ($value) use ($input, $seperator) {
+                return join($seperator, array_fill(0, (int) $value, $input->call($this, [$value])));
+            });
+        }
+
+        return $this;
     }
 
     /**
@@ -754,6 +779,19 @@ class Column
     }
 
     /**
+     * Display column as a default value if empty.
+     *
+     * @param string $default
+     * @return $this
+     */
+    public function default($default = '-')
+    {
+        return $this->display(function ($value) use ($default) {
+            return $value ?: $default;
+        });
+    }
+
+    /**
      * Display column using a grid row action.
      *
      * @param string $action
@@ -799,6 +837,34 @@ class Column
 
             return "<span class=\"label-{$style}\" style='width: 8px;height: 8px;padding: 0;border-radius: 50%;display: inline-block;'></span>";
         }, '&nbsp;&nbsp;');
+    }
+
+    /**
+     * @param string $selectable
+     *
+     * @return $this
+     */
+    public function belongsTo($selectable)
+    {
+        if (method_exists($selectable, 'display')) {
+            $this->display($selectable::display());
+        }
+
+        return $this->displayUsing(Grid\Displayers\BelongsTo::class, [$selectable]);
+    }
+
+    /**
+     * @param string $selectable
+     *
+     * @return $this
+     */
+    public function belongsToMany($selectable)
+    {
+        if (method_exists($selectable, 'display')) {
+            $this->display($selectable::display());
+        }
+
+        return $this->displayUsing(Grid\Displayers\BelongsToMany::class, [$selectable]);
     }
 
     /**

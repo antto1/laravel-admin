@@ -11,6 +11,8 @@ use Illuminate\Support\Str;
 
 class Select extends Field
 {
+    use CanCascadeFields;
+
     /**
      * @var array
      */
@@ -34,6 +36,11 @@ class Select extends Field
      * @var array
      */
     protected $config = [];
+
+    /**
+     * @var string
+     */
+    protected $cascadeEvent = 'change';
 
     /**
      * Set options.
@@ -454,6 +461,8 @@ EOT;
             'options' => $this->options,
             'groups'  => $this->groups,
         ]);
+
+        $this->addCascadeScript();
 
         $this->attribute('data-value', implode(',', (array) $this->value()));
 

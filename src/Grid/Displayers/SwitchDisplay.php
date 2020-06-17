@@ -25,8 +25,6 @@ class SwitchDisplay extends AbstractDisplayer
 
         $name = $this->column->getName();
 
-        $resource_url= url($this->grid->resource());
-
         $class = 'grid-switch-'.str_replace('.', '-', $name);
 
         $keys = collect(explode('.', $name));
@@ -55,7 +53,7 @@ $('.$class').bootstrapSwitch({
         var _status = true;
 
         $.ajax({
-            url: "{$resource_url}/" + pk,
+            url: "{$this->getResource()}/" + pk,
             type: "POST",
             async:false,
             data: {

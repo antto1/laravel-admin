@@ -5,7 +5,6 @@
     "keywords": ["laravel", "admin", "grid", "form"],
     "homepage": "https://github.com/antto1/laravel-admin",
     "license": "MIT",
-    "version": "v2.7.93",
     "authors": [
         {
             "name": "antto",
@@ -59,7 +58,6 @@
             "aliases": {
                 "Admin": "Encore\\Admin\\Facades\\Admin"
             }
-
         }
     }
 }

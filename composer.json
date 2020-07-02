@@ -1,16 +1,19 @@
 {
-    "name": "encore/laravel-admin",
-    "description": "laravel admin",
+    "name": "antto1/laravel-admin",
+    "description": "laravel admin - antto",
     "type": "library",
     "keywords": ["laravel", "admin", "grid", "form"],
-    "homepage": "https://github.com/z-song/laravel-admin",
+    "homepage": "https://github.com/antto1/laravel-admin",
     "license": "MIT",
     "authors": [
         {
-            "name": "zsong",
-            "email": "zosong@126.com"
+            "name": "antto",
+            "email": "info@anttoweb.com"
         }
     ],
+    "replace": {
+        "encore/laravel-admin":"1.*"
+    },
     "require": {
         "php": ">=7.0.0",
         "symfony/dom-crawler": "~3.1|~4.0|~5.0",

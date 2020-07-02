@@ -146,14 +146,11 @@ $(document).on('change', "{$this->getElementClassSelector()}", function () {
                 d.text = d.$textField;
                 return d;
             })
-        })
-        var isInDataList = data.filter(function(d) {
-            return d.id == targetValue;
-        }).length > 0;
-        if(targetValue && isInDataList ) {
-            select2.val(targetValue);
+        });
+        if (target.data('value')) {
+            $(target).val(target.data('value'));
         }
-        select2.trigger('change');
+        $(target).trigger('change');
     });
 });
 $("{$this->getElementClassSelector()}").each(function(){

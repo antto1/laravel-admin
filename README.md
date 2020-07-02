@@ -4,6 +4,3 @@
 ## 更新记录
 
 * 解决项目部署在二级目录下的问题
-
-Fix Select load bug on Edit page:
-https://github.com/z-song/laravel-admin/pull/4065

@@ -122,8 +122,6 @@ class Select extends Field
             $class = $field;
         }
 
-        $sourceUrl= url($sourceUrl);
-
         $placeholder = json_encode([
             'id'   => '',
             'text' => trans('admin.choose'),
@@ -135,10 +133,9 @@ class Select extends Field
 $(document).off('change', "{$this->getElementClassSelector()}");
 $(document).on('change', "{$this->getElementClassSelector()}", function () {
     var target = $(this).closest('.fields-group').find(".$class");
-    var targetValue = $(target).attr('data-value');
     $.get("$sourceUrl",{q : this.value}, function (data) {
         target.find("option").remove();
-        var select2 = $(target).select2({
+        $(target).select2({
             placeholder: $placeholder,
             allowClear: $strAllowClear,
             data: $.map(data, function (d) {
@@ -146,20 +143,12 @@ $(document).on('change', "{$this->getElementClassSelector()}", function () {
                 d.text = d.$textField;
                 return d;
             })
-        })
-        var isInDataList = data.filter(function(d) {
-            return d.id == targetValue;
-        }).length > 0;
-        if(targetValue && isInDataList ) {
-            select2.val(targetValue);
+        });
+        if (target.data('value')) {
+            $(target).val(target.data('value'));
         }
-        select2.trigger('change');
+        $(target).trigger('change');
     });
-});
-$("{$this->getElementClassSelector()}").each(function(){
-    if ($(this).data('value')) {
-        $(this).trigger('change');
-    }
 });
 EOT;
 
@@ -180,10 +169,6 @@ EOT;
      */
     public function loads($fields = [], $sourceUrls = [], $idField = 'id', $textField = 'text', bool $allowClear = true)
     {
-        foreach($sourceUrls as $item){
-            $item= url($item);
-        }
-
         $fieldsStr = implode('.', $fields);
         $urlsStr = implode('^', $sourceUrls);
 
@@ -281,8 +266,6 @@ EOT;
      */
     protected function loadRemoteOptions($url, $parameters = [], $options = [])
     {
-        $url= url($url);
-
         $ajaxOptions = [
             'url' => $url.'?'.http_build_query($parameters),
         ];
@@ -332,8 +315,6 @@ EOT;
      */
     public function ajax($url, $idField = 'id', $textField = 'text')
     {
-        $url= url($url);
-
         $configs = array_merge([
             'allowClear'         => true,
             'placeholder'        => $this->label,
@@ -416,7 +397,7 @@ $("form select").on("select2:opening", function (e) {
 $(document).ready(function(){
     $('select').each(function(){
         if($(this).is('[readonly]')){
-            $(this).closest('.form-group').find('span.select2-selection__choice__remove').first().remove();
+            $(this).closest('.form-group').find('span.select2-selection__choice__remove').remove();
             $(this).closest('.form-group').find('li.select2-search').first().remove();
             $(this).closest('.form-group').find('span.select2-selection__clear').first().remove();
         }

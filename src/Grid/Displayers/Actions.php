@@ -36,6 +36,13 @@ class Actions extends AbstractDisplayer
     protected $disableAll = false;
 
     /**
+     * diy translate.
+     *
+     * @var array
+     */
+    protected $trans = [];
+
+    /**
      * Append a action.
      *
      * @param $action
@@ -238,6 +245,7 @@ EOT;
         ];
 
         $url = url($this->getResource());
+        $trans = array_merge($trans, $this->trans);
 
         $script = <<<SCRIPT
 
@@ -285,5 +293,15 @@ $('.{$this->grid->getGridRowName()}-delete').unbind('click').click(function() {
 SCRIPT;
 
         Admin::script($script);
+    }
+
+    /**
+     * diy delete translate.
+     *
+     * @param $tans
+     */
+    public function setTrans($tans)
+    {
+        $this->trans = $tans;
     }
 }

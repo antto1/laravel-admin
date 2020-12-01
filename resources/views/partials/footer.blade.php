@@ -9,10 +9,10 @@
         &nbsp;&nbsp;&nbsp;&nbsp;
 
         @if(config('admin.show_version'))
-        <strong>Version</strong>&nbsp;&nbsp; {!! \Encore\Admin\Admin::VERSION !!}
+        <strong>Version</strong>&nbsp;&nbsp; {!! config('admin.version') !!}
         @endif
 
     </div>
     <!-- Default to the left -->
-    <strong>Powered by <a href="https://www.anttoweb.com" target="_blank">安拓网络</a></strong>
+    <strong>Powered by <a href="{!! config('admin.copyright_url') !!}" target="_blank">{!! config('admin.copyright') !!}</a></strong>
 </footer>

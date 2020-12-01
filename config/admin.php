@@ -87,6 +87,10 @@ return [
     */
     'title' => 'Admin',
 
+    'copyright'     => '安拓网络',
+    'copyright_url' => 'https://www.anttoweb.com',
+    'version'       => '1.0.0',
+
     /*
     |--------------------------------------------------------------------------
     | Access via `https`
